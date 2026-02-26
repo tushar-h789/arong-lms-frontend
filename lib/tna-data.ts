@@ -177,11 +177,11 @@ const MOCK_CENTER_GAPS: CenterGapRow[] = CENTERS.slice(0, 3).map((center, i) => 
   mediumGapCount: [35, 28, 14][i],
   lowGapCount: [20, 18, 10][i],
   topicGaps: {
-    defect_identification: (['high', 'high', 'medium'] as GapLevel)[i],
+    defect_identification: (['high', 'high', 'medium'] as unknown as GapLevel)[i],
     fire_safety: 'high',
     sop_dyeing: 'medium',
-    finishing_standards: (['medium', 'high', 'medium'] as GapLevel)[i],
-    certification_refresh: (['low', 'high', 'medium'] as GapLevel)[i],
+    finishing_standards: (['medium', 'high', 'medium'] as unknown as GapLevel)[i],
+    certification_refresh: (['low', 'high', 'medium'] as unknown as GapLevel)[i],
   } as Record<SkillTopicId, GapLevel>,
 }))
 
