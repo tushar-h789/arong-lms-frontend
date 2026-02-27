@@ -166,6 +166,7 @@ export const NAV_ITEMS: Record<RoleType, NavItem[]> = {
         { label: 'Content Moderation & Safety', href: `${base.admin}/communication/content-moderation` },
       ],
     },
+   
     {
       label: 'People & Growth',
       href: `${base.admin}/promotion-eligibility`,
@@ -194,6 +195,11 @@ export const NAV_ITEMS: Record<RoleType, NavItem[]> = {
         { label: 'System Logs / Health', href: `${base.admin}/settings/system-logs` },
       ],
     },
+    {
+      label: 'Support',
+      href: `${base.admin}/support`,
+      icon: <MessageSquareIcon className={iconClass} />,
+    },
   ],
   instructor: [
     { label: 'Dashboard', href: base.instructor, icon: <LayoutDashboardIcon className={iconClass} /> },
@@ -220,6 +226,7 @@ export const NAV_ITEMS: Record<RoleType, NavItem[]> = {
     { label: 'Progress', href: `${base.learner}/progress`, icon: <ActivityIcon className={iconClass} /> },
     { label: 'Certificates', href: `${base.learner}/certificates`, icon: <AwardIcon className={iconClass} /> },
     { label: 'Notifications', href: `${base.learner}/notifications`, icon: <BellIcon className={iconClass} /> },
+    { label: 'IT Support', href: `${base.learner}/it-support`, icon: <MessageSquareIcon className={iconClass} /> },
   ],
   hr: [
     { label: 'Dashboard', href: base.hr, icon: <LayoutDashboardIcon className={iconClass} /> },
@@ -247,6 +254,7 @@ export const NAV_ITEMS: Record<RoleType, NavItem[]> = {
     { label: 'Security', href: `${base.it}/security-monitoring`, icon: <ShieldIcon className={iconClass} /> },
     { label: 'Integrations', href: `${base.it}/integrations`, icon: <Building2Icon className={iconClass} /> },
     { label: 'Performance', href: `${base.it}/performance`, icon: <BarChart3Icon className={iconClass} /> },
+    { label: 'IT Support', href: `${base.it}/support`, icon: <MessageSquareIcon className={iconClass} /> },
   ],
   manager: [
     { label: 'Dashboard', href: base.manager, icon: <LayoutDashboardIcon className={iconClass} /> },
