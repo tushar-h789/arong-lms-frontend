@@ -7,6 +7,14 @@ import { BADGE_SET } from '@/lib/learner-dashboard-data'
 
 export type BadgeEarn = (typeof BADGE_SET)[number]
 
+export type Language = 'en' | 'bn'
+
+export type BadgeEarnOverlayProps = {
+  badge: BadgeEarn
+  onClose: () => void
+  language?: Language
+}
+
 const CONFETTI_COLORS = [
   '#f57820', '#fbbf24', '#34d399', '#60a5fa', '#a78bfa', '#f472b6', '#2dd4bf',
 ]
@@ -51,23 +59,31 @@ function ConfettiParticle({
 export function BadgeEarnOverlay({
   badge,
   onClose,
-}: {
-  badge: BadgeEarn
-  onClose: () => void
-}) {
+  language = 'en',
+}: BadgeEarnOverlayProps) {
+  const isBn = language === 'bn'
+  const badgeLabel = isBn ? (badge as { labelBn?: string }).labelBn ?? badge.label : badge.label
+  const badgeTagline = isBn ? (badge as { taglineBn?: string }).taglineBn ?? badge.tagline : badge.tagline
+  const unlockedText = isBn ? 'ব্যাজ আনলক হয়েছে' : 'Badge unlocked'
+  const continueText = isBn ? 'চালিয়ে যান' : 'Continue'
   const particles = useMemo(() => {
     const count = 48
+    // Deterministic "random" from index so render stays pure (no Math.random during render)
+    const prng = (seed: number) => {
+      const x = Math.sin(seed * 9999) * 10000
+      return x - Math.floor(x)
+    }
     return Array.from({ length: count }, (_, i) => {
-      const angle = (i / count) * Math.PI * 2 + Math.random() * 0.5
-      const dist = 120 + Math.random() * 180
+      const angle = (i / count) * Math.PI * 2 + prng(i) * 0.5
+      const dist = 120 + prng(i + 1000) * 180
       const cx = Math.cos(angle) * dist
       const cy = Math.sin(angle) * dist
       return {
         cx,
         cy,
         color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
-        delay: Math.random() * 200,
-        size: 6 + Math.random() * 6,
+        delay: prng(i + 2000) * 200,
+        size: 6 + prng(i + 3000) * 6,
       }
     })
   }, [])
@@ -102,23 +118,23 @@ export function BadgeEarnOverlay({
         </div>
         <p className="mt-4 flex items-center gap-2 text-sm font-medium uppercase tracking-wide text-amber-600 dark:text-amber-400">
           <Award className="size-4" />
-          Badge unlocked
+          {unlockedText}
         </p>
         <h2
           id="badge-earn-title"
           className="mt-2 text-center text-xl font-bold text-gray-900 dark:text-gray-100"
         >
-          {badge.label}
+          {badgeLabel}
         </h2>
         <p id="badge-earn-desc" className="mt-2 text-center text-sm text-gray-500 dark:text-gray-400">
-          {badge.tagline}
+          {badgeTagline}
         </p>
         <button
           type="button"
           onClick={onClose}
           className="mt-6 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:scale-[1.02] hover:bg-primary-hover active:scale-[0.98]"
         >
-          Continue
+          {continueText}
         </button>
       </div>
     </div>

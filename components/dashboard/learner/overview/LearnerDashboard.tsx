@@ -79,7 +79,7 @@ export default function LearnerDashboard() {
       {continueData && (
         <section
           className="rounded-2xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 p-6 shadow-sm"
-          aria-label="Continue learning"
+          aria-label={language === 'en' ? 'Continue learning' : 'শেখা চালিয়ে যান'}
         >
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
             {language === 'en' ? 'Continue where you left off' : 'যেখান থেকে থেমেছিলেন সেখান থেকেই শুরু করুন'}
@@ -87,10 +87,10 @@ export default function LearnerDashboard() {
           <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0 flex-1">
               <p className="font-medium text-gray-900 dark:text-gray-100">
-                {continueData.title}
+                {language === 'en' ? continueData.title : (continueData as { titleBn?: string }).titleBn ?? continueData.title}
               </p>
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                {language === 'en' ? 'Next' : 'পরবর্তী'}: {continueData.nextItem}
+                {language === 'en' ? 'Next' : 'পরবর্তী'}: {language === 'en' ? continueData.nextItem : (continueData as { nextItemBn?: string }).nextItemBn ?? continueData.nextItem}
               </p>
               <div className="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-600">
                 <div
@@ -128,11 +128,11 @@ export default function LearnerDashboard() {
               >
                 <div className="min-w-0 flex-1">
                   <p className="font-medium text-gray-900 dark:text-gray-100 truncate">
-                    {item.title}
+                    {language === 'en' ? item.title : (item as { titleBn?: string }).titleBn ?? item.title}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-0.5">
                     <Calendar className="size-3.5" />
-                    {item.dueDate}
+                    {language === 'en' ? item.dueDate : (item as { dueDateBn?: string }).dueDateBn ?? item.dueDate}
                   </p>
                 </div>
                 <Link
@@ -194,10 +194,10 @@ export default function LearnerDashboard() {
                     href={a.href}
                     className="text-sm font-medium text-gray-900 dark:text-gray-100 hover:text-primary line-clamp-1"
                   >
-                    {a.title}
+                    {language === 'en' ? a.title : (a as { titleBn?: string }).titleBn ?? a.title}
                   </Link>
                   <span className="text-xs text-gray-500 dark:text-gray-400">
-                    {a.time}
+                    {language === 'en' ? a.time : (a as { timeBn?: string }).timeBn ?? a.time}
                   </span>
                 </li>
               ))}
@@ -233,10 +233,10 @@ export default function LearnerDashboard() {
               <span
                 key={b.id}
                 className="flex items-center gap-2 rounded-full border border-amber-200 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/30 px-3 py-1.5 text-sm text-amber-800 dark:text-amber-200"
-                title={b.label}
+                title={language === 'en' ? b.label : (b as { labelBn?: string }).labelBn ?? b.label}
               >
                 <span aria-hidden>{b.icon}</span>
-                {b.label}
+                {language === 'en' ? b.label : (b as { labelBn?: string }).labelBn ?? b.label}
               </span>
             ))}
             {showLockedTeaser && lockedBadge && (
@@ -244,23 +244,23 @@ export default function LearnerDashboard() {
                 type="button"
                 onClick={() => handleEarnBadge(lockedBadge)}
                 className="flex items-center gap-2 rounded-full border border-dashed border-gray-300 dark:border-gray-500 bg-gray-50 dark:bg-gray-700/50 px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 transition-colors hover:border-amber-400 hover:bg-amber-50/50 hover:text-amber-700 dark:hover:border-amber-600 dark:hover:bg-amber-900/20 dark:hover:text-amber-300"
-                title="Click to see badge unlock animation"
+                title={language === 'en' ? 'Click to see badge unlock animation' : 'ব্যাজ আনলক অ্যানিমেশন দেখতে ক্লিক করুন'}
               >
                 <Lock className="size-3.5" />
-                {lockedBadge.icon} {lockedBadge.label}
-                <span className="sr-only">{lockedTeaser.message}</span>
+                {lockedBadge.icon} {language === 'en' ? lockedBadge.label : (lockedBadge as { labelBn?: string }).labelBn ?? lockedBadge.label}
+                <span className="sr-only">{language === 'en' ? lockedTeaser.message : (lockedTeaser as { messageBn?: string }).messageBn ?? lockedTeaser.message}</span>
               </button>
             )}
           </div>
           {showLockedTeaser && lockedTeaser && lockedBadge && (
             <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">
-              {lockedTeaser.message}{' '}
+              {language === 'en' ? lockedTeaser.message : (lockedTeaser as { messageBn?: string }).messageBn ?? lockedTeaser.message}{' '}
               <button
                 type="button"
                 onClick={() => handleEarnBadge(lockedBadge)}
                 className="font-medium text-primary hover:text-primary-hover underline underline-offset-1"
               >
-                See unlock animation
+                {language === 'en' ? 'See unlock animation' : 'আনলক অ্যানিমেশন দেখুন'}
               </button>
             </p>
           )}
@@ -282,7 +282,7 @@ export default function LearnerDashboard() {
                 </>
               ) : (
                 <>
-                  &apos;{d.streak.nextMilestoneBadgeLabel}&apos; ব্যাজ আনলক করতে আর {d.streak.nextMilestoneDays} দিন বাকি
+                  &apos;{(d.streak as { nextMilestoneBadgeLabelBn?: string }).nextMilestoneBadgeLabelBn ?? d.streak.nextMilestoneBadgeLabel}&apos; ব্যাজ আনলক করতে আর {d.streak.nextMilestoneDays} দিন বাকি
                 </>
               )}
             </p>
@@ -307,7 +307,7 @@ export default function LearnerDashboard() {
                   {language === 'en' ? (
                     <>Latest: {d.certificates.latest.name}</>
                   ) : (
-                    <>সর্বশেষঃ {d.certificates.latest.name}</>
+                    <>সর্বশেষঃ {(d.certificates.latest as { nameBn?: string }).nameBn ?? d.certificates.latest.name}</>
                   )}
               </p>
             </div>
@@ -334,6 +334,7 @@ export default function LearnerDashboard() {
         <BadgeEarnOverlay
           badge={badgeToCelebrate}
           onClose={handleCloseCelebration}
+          language={language}
         />
       )}
     </div>

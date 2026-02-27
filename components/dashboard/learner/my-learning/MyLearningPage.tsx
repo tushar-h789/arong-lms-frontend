@@ -29,8 +29,9 @@ import {
   type LearningStatus,
   type SortOption,
 } from '@/lib/my-learning-data'
+import { useLanguage } from '@/components/layout/dashboard/LanguageContext'
 
-const STATUS_TABS: { key: LearningStatus | 'all'; label: string }[] = [
+const STATUS_TABS_EN: { key: LearningStatus | 'all'; label: string }[] = [
   { key: 'all', label: 'All' },
   { key: 'assigned', label: 'Assigned' },
   { key: 'in_progress', label: 'In Progress' },
@@ -38,11 +39,26 @@ const STATUS_TABS: { key: LearningStatus | 'all'; label: string }[] = [
   { key: 'overdue', label: 'Overdue' },
 ]
 
-const SORT_OPTIONS: { value: SortOption; label: string }[] = [
+const STATUS_TABS_BN: { key: LearningStatus | 'all'; label: string }[] = [
+  { key: 'all', label: 'সব' },
+  { key: 'assigned', label: 'নির্ধারিত' },
+  { key: 'in_progress', label: 'চলমান' },
+  { key: 'completed', label: 'সম্পন্ন' },
+  { key: 'overdue', label: 'সময় অতিক্রান্ত' },
+]
+
+const SORT_OPTIONS_EN: { value: SortOption; label: string }[] = [
   { value: 'due_date', label: 'Due date' },
   { value: 'recently_opened', label: 'Recently opened' },
   { value: 'progress', label: 'Progress %' },
   { value: 'type', label: 'Path / Course' },
+]
+
+const SORT_OPTIONS_BN: { value: SortOption; label: string }[] = [
+  { value: 'due_date', label: 'জমা দেওয়ার তারিখ' },
+  { value: 'recently_opened', label: 'সম্প্রতি খোলা' },
+  { value: 'progress', label: 'অগ্রগতি %' },
+  { value: 'type', label: 'পাথ / কোর্স' },
 ]
 
 function filterByStatus(items: MyLearningItem[], status: LearningStatus | 'all'): MyLearningItem[] {
@@ -55,31 +71,38 @@ function getTabCount(items: MyLearningItem[], key: LearningStatus | 'all'): numb
   return items.filter((i) => i.status === key).length
 }
 
+type Lang = 'en' | 'bn'
+
 function LearningItemCard({
   item,
   isSuggested,
   isPinnedContinue,
+  lang,
 }: {
   item: MyLearningItem
   isSuggested?: boolean
   isPinnedContinue?: boolean
+  lang: Lang
 }) {
   const isAssigned = item.status === 'assigned'
   const isInProgress = item.status === 'in_progress'
   const isCompleted = item.status === 'completed'
   const isOverdue = item.status === 'overdue'
 
+  const isBn = lang === 'bn'
+  const startLabel = isBn ? 'শুরু করুন' : 'Start'
+  const continueLabel = isBn ? 'চালিয়ে যান' : 'Continue'
+  const certLabel = isBn ? 'সার্টিফিকেট' : 'Certificate'
+  const viewLabel = isBn ? 'দেখুন' : 'View'
+
   const buttonLabel = isAssigned
-    ? 'Start'
+    ? startLabel
     : isInProgress
-      ? 'Continue'
+      ? continueLabel
       : isCompleted && item.certificateHref
-        ? 'Certificate'
-        : 'View'
-  const buttonHref =
-    isCompleted && item.certificateHref && buttonLabel === 'Certificate'
-      ? item.certificateHref
-      : item.href
+        ? certLabel
+        : viewLabel
+  const buttonHref = isCompleted && item.certificateHref ? item.certificateHref : item.href
 
   const accentBorder =
     isOverdue
@@ -89,6 +112,13 @@ function LearningItemCard({
         : isCompleted
           ? 'border-l-4 border-l-emerald-400 dark:border-l-emerald-500'
           : 'border-l-4 border-l-amber-400 dark:border-l-amber-500'
+
+  const continueHere = isBn ? 'এখান থেকে চালিয়ে যান' : 'Continue here'
+  const upNext = isBn ? 'পরবর্তী' : 'Up next'
+  const pathCourse = item.type === 'path' ? (isBn ? 'পাথ' : 'Path') : (isBn ? 'কোর্স' : 'Course')
+  const downloadable = isBn ? 'ডাউনলোডযোগ্য' : 'Downloadable'
+  const overdueChip = isBn ? 'সময় অতিক্রান্ত' : 'Overdue'
+  const duePrefix = isBn ? 'জমা' : 'Due'
 
   return (
     <div
@@ -100,13 +130,13 @@ function LearningItemCard({
             {isPinnedContinue && (
               <span className="inline-flex items-center gap-1 rounded-full bg-primary/15 dark:bg-primary/25 px-2.5 py-0.5 text-xs font-semibold text-primary">
                 <Play className="size-3" />
-                Continue here
+                {continueHere}
               </span>
             )}
             {isSuggested && !isPinnedContinue && (
               <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 dark:bg-primary/20 px-2.5 py-0.5 text-xs font-medium text-primary">
                 <Sparkles className="size-3" />
-                Up next
+                {upNext}
               </span>
             )}
             <h3 className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-primary transition-colors">
@@ -123,19 +153,19 @@ function LearningItemCard({
               ) : (
                 <BookOpen className="size-3" />
               )}
-              {item.type === 'path' ? 'Path' : 'Course'}
+              {pathCourse}
             </span>
             {item.downloadable && (
               <span
                 className="inline-flex items-center gap-1 rounded-full bg-gray-100 dark:bg-gray-700 px-2 py-0.5 text-xs text-gray-600 dark:text-gray-400"
-                title="Downloadable for offline"
+                title={isBn ? 'অফলাইনে ডাউনলোড করা যাবে' : 'Downloadable for offline'}
               >
-                <Download className="size-3" /> Downloadable
+                <Download className="size-3" /> {downloadable}
               </span>
             )}
             {isOverdue && (
               <span className="inline-flex items-center gap-1 rounded-full bg-rose-100 px-2 py-0.5 text-xs font-medium text-rose-700 dark:bg-rose-900/40 dark:text-rose-300">
-                <AlertCircle className="size-3" /> Overdue
+                <AlertCircle className="size-3" /> {overdueChip}
               </span>
             )}
           </div>
@@ -151,7 +181,7 @@ function LearningItemCard({
                 }`}
             >
               <Calendar className="size-3.5 shrink-0" />
-              Due {item.dueDate}
+              {duePrefix} {item.dueDate}
             </p>
           )}
           {!isAssigned && (
@@ -174,9 +204,9 @@ function LearningItemCard({
           className={`shrink-0 inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:scale-[1.02] hover:bg-primary-hover hover:shadow-md active:scale-[0.98] ${isInProgress ? 'ring-2 ring-primary/30' : ''
             }`}
         >
-          {buttonLabel === 'Continue' || buttonLabel === 'Start' ? (
+          {buttonLabel === startLabel || buttonLabel === continueLabel ? (
             <Play className="size-4" />
-          ) : buttonLabel === 'Certificate' ? (
+          ) : buttonLabel === certLabel ? (
             <FileCheck className="size-4" />
           ) : (
             <ChevronRight className="size-4" />
@@ -197,8 +227,13 @@ function LearningItemCard({
 const DUE_SOON_MAX = 3
 
 export default function MyLearningPage() {
+  const { language } = useLanguage()
+  const lang: Lang = language
   const [activeTab, setActiveTab] = useState<LearningStatus | 'all'>('all')
   const [sortBy, setSortBy] = useState<SortOption>('due_date')
+
+  const statusTabs = lang === 'bn' ? STATUS_TABS_BN : STATUS_TABS_EN
+  const sortOptions = lang === 'bn' ? SORT_OPTIONS_BN : SORT_OPTIONS_EN
 
   const summary = useMemo(() => getMyLearningSummary(MY_LEARNING_ITEMS), [])
   const continueItem = useMemo(() => getContinueItem(MY_LEARNING_ITEMS), [])
@@ -243,15 +278,30 @@ export default function MyLearningPage() {
     return inProgress[0]?.id ?? null
   }, [restItems])
 
+  const isBn = lang === 'bn'
+  const pageTitle = isBn ? 'আমার শেখা' : 'My Learning'
+  const pageDesc = isBn ? 'যেখান থেকে থেমেছিলেন সেখান থেকে শুরু করুন — এক ক্লিকে শুরু বা চালিয়ে যান।' : 'Pick up where you left off — start or continue in one click.'
+  const helpLink = isBn ? 'ভিডিও চালু হচ্ছে না? লগইন সমস্যা? সাহায্য নিন' : 'Video not playing? Login issue? Get help'
+  const dueSoonCard = isBn ? 'শীঘ্রই জমা (৭ দিন)' : 'Due soon (7 days)'
+  const inProgressCard = isBn ? 'চলমান' : 'In progress'
+  const completedCard = isBn ? 'সম্পন্ন' : 'Completed'
+  const overdueCard = isBn ? 'সময় অতিক্রান্ত' : 'Overdue'
+  const continueHeading = isBn ? 'যেখান থেকে থেমেছিলেন সেখান থেকে চালিয়ে যান' : 'Continue where you left off'
+  const dueSoonHeading = isBn ? 'শীঘ্রই জমা' : 'Due soon'
+  const allLearningHeading = isBn ? 'সব শেখা' : 'All learning'
+  const sortByLabel = isBn ? 'সাজান' : 'Sort by'
+  const emptyTitle = isBn ? 'এখনও কিছু নেই' : 'Nothing here yet'
+  const emptyDesc = isBn ? 'অন্য ট্যাব দেখুন অথবা নতুন ট্রেনিং দেওয়া হলে আবার চেক করুন।' : 'Try another tab or check back when new trainings are assigned.'
+
   return (
     <div className="space-y-8">
       <header className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            My Learning
+            {pageTitle}
           </h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Pick up where you left off — start or continue in one click.
+            {pageDesc}
           </p>
         </div>
         <Link
@@ -259,14 +309,14 @@ export default function MyLearningPage() {
           className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-primary"
         >
           <HelpCircle className="size-4" />
-          Video not playing? Login issue? Get help
+          {helpLink}
         </Link>
       </header>
 
       {/* Summary cards */}
       <section
         className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:gap-4"
-        aria-label="Summary"
+        aria-label={isBn ? 'সারসংক্ষেপ' : 'Summary'}
       >
         <div className="rounded-xl border border-amber-200/60 dark:border-amber-800/50 bg-amber-50/70 dark:bg-amber-900/20 p-4 transition-shadow hover:shadow-md">
           <div className="flex items-center gap-2">
@@ -278,7 +328,7 @@ export default function MyLearningPage() {
             </span>
           </div>
           <p className="mt-1 text-xs font-medium text-amber-800/80 dark:text-amber-200/80">
-            Due soon (7 days)
+            {dueSoonCard}
           </p>
         </div>
         <div className="rounded-xl border border-sky-200/60 dark:border-sky-800/50 bg-sky-50/70 dark:bg-sky-900/20 p-4 transition-shadow hover:shadow-md">
@@ -291,7 +341,7 @@ export default function MyLearningPage() {
             </span>
           </div>
           <p className="mt-1 text-xs font-medium text-sky-800/80 dark:text-sky-200/80">
-            In progress
+            {inProgressCard}
           </p>
         </div>
         <div className="rounded-xl border border-emerald-200/60 dark:border-emerald-800/50 bg-emerald-50/70 dark:bg-emerald-900/20 p-4 transition-shadow hover:shadow-md">
@@ -304,7 +354,7 @@ export default function MyLearningPage() {
             </span>
           </div>
           <p className="mt-1 text-xs font-medium text-emerald-800/80 dark:text-emerald-200/80">
-            Completed
+            {completedCard}
           </p>
         </div>
         <div className="rounded-xl border border-rose-200/50 dark:border-rose-800/50 bg-rose-50/50 dark:bg-rose-900/15 p-4 transition-shadow hover:shadow-md">
@@ -317,7 +367,7 @@ export default function MyLearningPage() {
             </span>
           </div>
           <p className="mt-1 text-xs font-medium text-rose-700/80 dark:text-rose-300/80">
-            Overdue
+            {overdueCard}
           </p>
         </div>
       </section>
@@ -326,11 +376,12 @@ export default function MyLearningPage() {
       {continueItem && (
         <section aria-labelledby="continue-heading">
           <h2 id="continue-heading" className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-            Continue where you left off
+            {continueHeading}
           </h2>
           <LearningItemCard
             item={continueItem}
             isPinnedContinue
+            lang={lang}
           />
         </section>
       )}
@@ -339,11 +390,11 @@ export default function MyLearningPage() {
       {dueSoonItems.length > 0 && (
         <section aria-labelledby="due-soon-heading">
           <h2 id="due-soon-heading" className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-            Due soon
+            {dueSoonHeading}
           </h2>
           <div className="space-y-3">
             {dueSoonItems.map((item) => (
-              <LearningItemCard key={item.id} item={item} />
+              <LearningItemCard key={item.id} item={item} lang={lang} />
             ))}
           </div>
         </section>
@@ -352,14 +403,14 @@ export default function MyLearningPage() {
       {/* Section 3: All Assigned (rest) — tabs + sort */}
       <section aria-labelledby="all-heading">
         <h2 id="all-heading" className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-          All learning
+          {allLearningHeading}
         </h2>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div
             className="flex flex-wrap gap-1 rounded-xl bg-gray-100 dark:bg-gray-800/80 p-1.5"
             role="tablist"
           >
-            {STATUS_TABS.map((tab) => {
+            {statusTabs.map((tab) => {
               const count = tabCountsRest[tab.key]
               const isActive = activeTab === tab.key
               return (
@@ -384,14 +435,14 @@ export default function MyLearningPage() {
           </div>
           <div className="flex items-center gap-2">
             <ArrowDownUp className="size-4 text-gray-400 dark:text-gray-500" />
-            <label htmlFor="sort-my-learning" className="sr-only">Sort by</label>
+            <label htmlFor="sort-my-learning" className="sr-only">{sortByLabel}</label>
             <select
               id="sort-my-learning"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as SortOption)}
               className="rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 dark:focus:ring-offset-gray-900"
             >
-              {SORT_OPTIONS.map((opt) => (
+              {sortOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
             </select>
@@ -401,9 +452,9 @@ export default function MyLearningPage() {
           {filteredRest.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-gray-300 dark:border-gray-600 bg-gray-50/50 dark:bg-gray-800/50 p-10 text-center">
               <BookOpen className="mx-auto size-12 text-gray-300 dark:text-gray-600" />
-              <p className="mt-3 font-medium text-gray-600 dark:text-gray-400">Nothing here yet</p>
+              <p className="mt-3 font-medium text-gray-600 dark:text-gray-400">{emptyTitle}</p>
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-500">
-                Try another tab or check back when new trainings are assigned.
+                {emptyDesc}
               </p>
             </div>
           ) : (
@@ -412,6 +463,7 @@ export default function MyLearningPage() {
                 key={item.id}
                 item={item}
                 isSuggested={item.id === suggestedIdRest && activeTab === 'all'}
+                lang={lang}
               />
             ))
           )}

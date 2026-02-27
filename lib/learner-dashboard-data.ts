@@ -4,13 +4,13 @@
  */
 
 export const BADGE_SET = [
-  { id: 'on-time-learner', label: 'On-time Learner', icon: '⏱️', tagline: 'You finished before the due date!' },
-  { id: 'consistency', label: 'Consistency', icon: '🔥', tagline: 'Learning streak unlocked!' },
-  { id: 'safety-ready', label: 'Safety Ready', icon: '🛡️', tagline: 'Safety course completed!' },
-  { id: 'quality-first', label: 'Quality First', icon: '✨', tagline: 'Quality SOP path completed!' },
-  { id: 'skill-level-1', label: 'Skill Level 1', icon: '📌', tagline: 'First craft path completed!' },
-  { id: 'perfect-score', label: 'Perfect Score', icon: '💯', tagline: 'You aced the quiz!' },
-  { id: 'attendance-star', label: 'Attendance Star', icon: '⭐', tagline: 'Great attendance at live sessions!' },
+  { id: 'on-time-learner', label: 'On-time Learner', labelBn: 'সময়মতো শেখা', icon: '⏱️', tagline: 'You finished before the due date!', taglineBn: 'আপনি নির্ধারিত তারিখের আগেই শেষ করেছেন!' },
+  { id: 'consistency', label: 'Consistency', labelBn: 'নিয়মিততা', icon: '🔥', tagline: 'Learning streak unlocked!', taglineBn: 'শেখার ধারা আনলক হয়েছে!' },
+  { id: 'safety-ready', label: 'Safety Ready', labelBn: 'নিরাপত্তা প্রস্তুত', icon: '🛡️', tagline: 'Safety course completed!', taglineBn: 'নিরাপত্তা কোর্স সম্পন্ন!' },
+  { id: 'quality-first', label: 'Quality First', labelBn: 'গুণগত মান প্রথম', icon: '✨', tagline: 'Quality SOP path completed!', taglineBn: 'কোয়ালিটি এসওপি পাথ সম্পন্ন!' },
+  { id: 'skill-level-1', label: 'Skill Level 1', labelBn: 'স্কিল লেভেল ১', icon: '📌', tagline: 'First craft path completed!', taglineBn: 'প্রথম ক্রাফট পাথ সম্পন্ন!' },
+  { id: 'perfect-score', label: 'Perfect Score', labelBn: 'পারফেক্ট স্কোর', icon: '💯', tagline: 'You aced the quiz!', taglineBn: 'কুইজে পুরো নম্বর পেয়েছেন!' },
+  { id: 'attendance-star', label: 'Attendance Star', labelBn: 'অ্যাটেনডেন্স স্টার', icon: '⭐', tagline: 'Great attendance at live sessions!', taglineBn: 'লাইভ সেশনে দারুণ উপস্থিতি!' },
 ] as const
 
 export type BadgeId = (typeof BADGE_SET)[number]['id']
@@ -26,15 +26,17 @@ export const LEARNER_DASHBOARD = {
   continueLearning: {
     id: 'c1',
     title: 'Workplace Safety Essentials',
+    titleBn: 'কর্মক্ষেত্র নিরাপত্তা বুনিয়াদ',
     progress: 65,
     nextItem: 'Module 4: Fire Safety',
+    nextItemBn: 'মডিউল ৪: অগ্নি নিরাপত্তা',
     href: '/dashboard/learner/course/c1',
   },
 
   /** Due soon — 2–4 items, compact */
   dueSoon: [
-    { id: '1', title: 'Workplace Safety Essentials', dueDate: 'Feb 22', dueDateRaw: '2025-02-22', href: '/dashboard/learner/course/c1' },
-    { id: '2', title: 'Data Privacy Basics', dueDate: 'Feb 25', dueDateRaw: '2025-02-25', href: '/dashboard/learner/course/c2' },
+    { id: '1', title: 'Workplace Safety Essentials', titleBn: 'কর্মক্ষেত্র নিরাপত্তা বুনিয়াদ', dueDate: 'Feb 22', dueDateBn: '২২ ফেব্রু', dueDateRaw: '2025-02-22', href: '/dashboard/learner/course/c1' },
+    { id: '2', title: 'Data Privacy Basics', titleBn: 'ডেটা গোপনীয়তা বুনিয়াদ', dueDate: 'Feb 25', dueDateBn: '২৫ ফেব্রু', dueDateRaw: '2025-02-25', href: '/dashboard/learner/course/c2' },
   ],
 
   /** My Progress — this week & overall */
@@ -46,8 +48,8 @@ export const LEARNER_DASHBOARD = {
 
   /** Latest 1–2 announcements */
   announcements: [
-    { id: '1', title: 'New course: Quality SOP path added', time: 'Today', href: '#' },
-    { id: '2', title: 'Weekly live session this Friday', time: '2 hours ago', href: '#' },
+    { id: '1', title: 'New course: Quality SOP path added', titleBn: 'নতুন কোর্স: কোয়ালিটি এসওপি পাথ যুক্ত হয়েছে', time: 'Today', timeBn: 'আজ', href: '#' },
+    { id: '2', title: 'Weekly live session this Friday', titleBn: 'এই শুক্রবার সাপ্তাহিক লাইভ সেশন', time: '2 hours ago', timeBn: '২ ঘণ্টা আগে', href: '#' },
   ],
 
   /** Earned badge IDs (top 3 shown) + locked teaser */
@@ -56,6 +58,7 @@ export const LEARNER_DASHBOARD = {
   lockedBadgeTeaser: {
     badgeId: 'on-time-learner' as BadgeId,
     message: "Complete 1 more lesson to unlock the 'On-time Learner' badge",
+    messageBn: "আরও ১টি লেসন সম্পন্ন করলে 'সময়মতো শেখা' ব্যাজ আনলক হবে",
   },
 
   /** Streak — soft tone */
@@ -63,12 +66,13 @@ export const LEARNER_DASHBOARD = {
     currentDays: 3,
     nextMilestoneDays: 4,
     nextMilestoneBadgeLabel: 'Consistency',
+    nextMilestoneBadgeLabelBn: 'নিয়মিততা',
   },
 
   /** Certificates */
   certificates: {
     total: 2,
-    latest: { id: 'cert1', name: 'Safety Fundamentals', downloadHref: '#' },
+    latest: { id: 'cert1', name: 'Safety Fundamentals', nameBn: 'নিরাপত্তা বুনিয়াদ', downloadHref: '#' },
   },
 
   // Legacy (keep for any other pages)
