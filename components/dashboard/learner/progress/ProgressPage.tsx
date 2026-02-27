@@ -27,8 +27,10 @@ import {
   type PathProgressItem,
   type ScoreHistoryItem,
 } from '@/lib/learner-progress-data'
+import { useLanguage } from '@/components/layout/dashboard/LanguageContext'
 
 type CourseFilter = 'all' | 'in_progress' | 'completed'
+type Lang = 'en' | 'bn'
 
 const SECTION_CARD =
   'rounded-2xl border border-gray-200/80 bg-white shadow-[0_1px_3px_0_rgba(0,0,0,0.06)] dark:border-gray-700 dark:bg-gray-800/95'
@@ -73,8 +75,12 @@ function SummaryCard({
   )
 }
 
-function CourseProgressCard({ item }: { item: CourseProgressItem }) {
+function CourseProgressCard({ item, lang }: { item: CourseProgressItem; lang: Lang }) {
   const isCompleted = item.status === 'completed'
+  const isBn = lang === 'bn'
+  const lessonsLabel = isBn ? 'লেসন · শেষ কার্যকলাপ ' : ' lessons · Last activity '
+  const viewLabel = isBn ? 'দেখুন' : 'View'
+  const continueLabel = isBn ? 'চালিয়ে যান' : 'Continue'
   return (
     <div
       className={`flex overflow-hidden rounded-xl border bg-white shadow-sm transition-all duration-200 hover:shadow dark:bg-gray-800/95 ${isCompleted
@@ -108,7 +114,7 @@ function CourseProgressCard({ item }: { item: CourseProgressItem }) {
               <span className="font-medium tabular-nums text-gray-600 dark:text-gray-300">
                 {item.lessonsDone}/{item.lessonsTotal}
               </span>
-              {' lessons · Last activity '}
+              {lessonsLabel}
               <span>{item.lastActivityDate}</span>
             </p>
             <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700 sm:max-w-sm">
@@ -129,12 +135,12 @@ function CourseProgressCard({ item }: { item: CourseProgressItem }) {
         >
           {isCompleted ? (
             <>
-              View <ChevronRight className="size-4" />
+              {viewLabel} <ChevronRight className="size-4" />
             </>
           ) : (
             <>
               <Play className="size-4" />
-              Continue
+              {continueLabel}
               <ChevronRight className="size-4" />
             </>
           )}
@@ -144,7 +150,11 @@ function CourseProgressCard({ item }: { item: CourseProgressItem }) {
   )
 }
 
-function PathProgressCard({ item }: { item: PathProgressItem }) {
+function PathProgressCard({ item, lang }: { item: PathProgressItem; lang: Lang }) {
+  const isBn = lang === 'bn'
+  const stepLabel = isBn ? 'ধাপ ' : 'Step '
+  const nextLabel = isBn ? ' · পরবর্তী: ' : ' · Next: '
+  const openLabel = isBn ? 'খুলুন' : 'Open'
   return (
     <div className={`overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-[0_1px_3px_0_rgba(0,0,0,0.06)] transition-all duration-200 hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)] dark:border-gray-700 dark:bg-gray-800/95 dark:hover:shadow-[0_4px_16px_rgba(0,0,0,0.25)]`}>
       <div className="flex items-center gap-5 p-6">
@@ -154,8 +164,8 @@ function PathProgressCard({ item }: { item: PathProgressItem }) {
         <div className="min-w-0 flex-1">
           <h3 className="font-semibold text-gray-900 dark:text-gray-100">{item.title}</h3>
           <p className="mt-1.5 text-sm text-gray-500 dark:text-gray-400">
-            Step <span className="font-semibold text-gray-700 dark:text-gray-300">{item.currentStep}/{item.totalSteps}</span>
-            {' · Next: '}{item.nextStepName}
+            {stepLabel}<span className="font-semibold text-gray-700 dark:text-gray-300">{item.currentStep}/{item.totalSteps}</span>
+            {nextLabel}{item.nextStepName}
           </p>
           {item.bottleneckHint && (
             <p className="mt-2 text-xs font-medium text-amber-600 dark:text-amber-400">{item.bottleneckHint}</p>
@@ -165,14 +175,17 @@ function PathProgressCard({ item }: { item: PathProgressItem }) {
           href={item.href}
           className="shrink-0 rounded-xl border-2 border-gray-200 bg-gray-50 px-5 py-2.5 text-sm font-semibold text-gray-700 transition-colors hover:border-gray-300 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
         >
-          Open
+          {openLabel}
         </Link>
       </div>
     </div>
   )
 }
 
-function ScoreHistoryRow({ item }: { item: ScoreHistoryItem }) {
+function ScoreHistoryRow({ item, lang }: { item: ScoreHistoryItem; lang: Lang }) {
+  const isBn = lang === 'bn'
+  const passLabel = isBn ? 'পাস' : 'Pass'
+  const failLabel = isBn ? 'ফেইল' : 'Fail'
   return (
     <div className="flex items-center justify-between gap-4 rounded-xl border border-gray-200/60 bg-gray-50/50 px-5 py-4 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800/50 dark:hover:bg-gray-800">
       <div className="min-w-0">
@@ -186,7 +199,7 @@ function ScoreHistoryRow({ item }: { item: ScoreHistoryItem }) {
             : 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300'
             }`}
         >
-          {item.passFail === 'pass' ? 'Pass' : 'Fail'}
+          {item.passFail === 'pass' ? passLabel : failLabel}
         </span>
         <span className="min-w-12 text-right text-lg font-bold tabular-nums text-gray-900 dark:text-gray-100">
           {item.score}%
@@ -197,6 +210,8 @@ function ScoreHistoryRow({ item }: { item: ScoreHistoryItem }) {
 }
 
 export default function ProgressPage() {
+  const { language } = useLanguage()
+  const lang: Lang = language
   const summary = getProgressSummary()
   const allCourses = useMemo(() => getCourseProgressList(), [])
   const [courseFilter, setCourseFilter] = useState<CourseFilter>('all')
@@ -209,16 +224,36 @@ export default function ProgressPage() {
   const earnedBadges = useMemo(() => getEarnedBadgesTop3(), [])
   const nextBadgeTeaser = useMemo(() => getNextBadgeTeaser(), [])
 
+  const isBn = lang === 'bn'
+  const pageTitle = isBn ? 'আমার অগ্রগতি' : 'My Progress'
+  const pageDesc = isBn ? 'আপনার শেখা ট্র্যাক করুন — সম্পন্ন কোর্স, পাথ ও কুইজ স্কোর এক জায়গায়।' : 'Track your learning — completion, courses, paths, and quiz scores in one place.'
+  const overviewLabel = isBn ? 'সারসংক্ষেপ' : 'Overview'
+  const overallCompletionLabel = isBn ? 'মোট সম্পন্ন' : 'Overall completion'
+  const completedCoursesLabel = isBn ? 'সম্পন্ন কোর্স' : 'Completed courses'
+  const inProgressLabel = isBn ? 'চলমান' : 'In progress'
+  const certificatesLabel = isBn ? 'সার্টিফিকেট' : 'Certificates'
+  const lessonsThisWeekLabel = isBn ? 'এই সপ্তাহের লেসন' : 'Lessons this week'
+  const badgesHeading = isBn ? 'ব্যাজ' : 'Badges'
+  const nextLabel = isBn ? 'পরবর্তী:' : 'Next:'
+  const courseProgressHeading = isBn ? 'কোর্স অগ্রগতি' : 'Course progress'
+  const filterAll = isBn ? 'সব' : 'All'
+  const filterCompleted = isBn ? 'সম্পন্ন' : 'Completed'
+  const noCoursesFilter = isBn ? 'এই ফিল্টারে কোনো কোর্স মিলেনি।' : 'No courses match this filter.'
+  const pathProgressHeading = isBn ? 'পাথ অগ্রগতি' : 'Path progress'
+  const recentQuizResultsHeading = isBn ? 'সাম্প্রতিক কুইজ ফলাফল' : 'Recent quiz results'
+  const viewAllResultsLabel = isBn ? 'সব ফলাফল দেখুন' : 'View all results'
+  const noQuizResultsLabel = isBn ? 'এখনও কোনো কুইজ ফলাফল নেই।' : 'No quiz results yet.'
+
   return (
     <div className="min-h-[60vh] w-full bg-gray-50/80 dark:bg-gray-900/50">
       <div className="w-full space-y-8 p-4 pb-16 sm:p-6 lg:p-8">
         {/* Page header */}
         <header className="border-b border-gray-200/80 pb-8 dark:border-gray-700">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100 sm:text-3xl">
-            My Progress
+            {pageTitle}
           </h1>
           <p className="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
-            Track your learning — completion, courses, paths, and quiz scores in one place.
+            {pageDesc}
           </p>
         </header>
 
@@ -229,20 +264,20 @@ export default function ProgressPage() {
               <BarChart3 className="size-5" />
             </div>
             <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-300">
-              Overview
+              {overviewLabel}
             </h2>
           </div>
           <div className="grid grid-cols-2 gap-4 p-6 sm:grid-cols-3 lg:grid-cols-5">
             <SummaryCard
-              label="Overall completion"
+              label={overallCompletionLabel}
               value={`${summary.overallCompletionPercent}%`}
               icon={Percent}
               accent
             />
-            <SummaryCard label="Completed courses" value={summary.completedCoursesCount} icon={FileCheck} />
-            <SummaryCard label="In progress" value={summary.inProgressCount} icon={Loader2} />
-            <SummaryCard label="Certificates" value={summary.certificatesCount} icon={Award} />
-            <SummaryCard label="Lessons this week" value={summary.lessonsThisWeek} icon={BookOpen} />
+            <SummaryCard label={completedCoursesLabel} value={summary.completedCoursesCount} icon={FileCheck} />
+            <SummaryCard label={inProgressLabel} value={summary.inProgressCount} icon={Loader2} />
+            <SummaryCard label={certificatesLabel} value={summary.certificatesCount} icon={Award} />
+            <SummaryCard label={lessonsThisWeekLabel} value={summary.lessonsThisWeek} icon={BookOpen} />
           </div>
         </section>
 
@@ -254,7 +289,7 @@ export default function ProgressPage() {
                 <Sparkles className="size-5" />
               </div>
               <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-300">
-                Badges
+                {badgesHeading}
               </h2>
             </div>
             <div className="p-6">
@@ -273,7 +308,7 @@ export default function ProgressPage() {
               {nextBadgeTeaser && (
                 <div className="mt-4 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 dark:border-primary/20 dark:bg-primary/10">
                   <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    <span className="text-primary">Next:</span> {nextBadgeTeaser.message}
+                    <span className="text-primary">{nextLabel}</span> {nextBadgeTeaser.message}
                   </p>
                 </div>
               )}
@@ -289,7 +324,7 @@ export default function ProgressPage() {
                 <Target className="size-5" />
               </div>
               <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-300">
-                Course progress
+                {courseProgressHeading}
               </h2>
             </div>
             <div className="flex rounded-xl bg-gray-100 p-1 dark:bg-gray-700">
@@ -303,7 +338,7 @@ export default function ProgressPage() {
                     : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
                     }`}
                 >
-                  {key === 'all' ? 'All' : key === 'in_progress' ? 'In progress' : 'Completed'}
+                  {key === 'all' ? filterAll : key === 'in_progress' ? inProgressLabel : filterCompleted}
                 </button>
               ))}
             </div>
@@ -311,10 +346,10 @@ export default function ProgressPage() {
           <div className="space-y-5 p-6 pt-5">
             {courseList.length === 0 ? (
               <div className="rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50/50 py-14 text-center dark:border-gray-700 dark:bg-gray-800/30">
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">No courses match this filter.</p>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{noCoursesFilter}</p>
               </div>
             ) : (
-              courseList.map((item) => <CourseProgressCard key={item.id} item={item} />)
+              courseList.map((item) => <CourseProgressCard key={item.id} item={item} lang={lang} />)
             )}
           </div>
         </section>
@@ -327,12 +362,12 @@ export default function ProgressPage() {
                 <Route className="size-5 text-gray-600 dark:text-gray-300" />
               </div>
               <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-300">
-                Path progress
+                {pathProgressHeading}
               </h2>
             </div>
             <div className="space-y-5 p-6 pt-5">
               {pathList.map((item) => (
-                <PathProgressCard key={item.id} item={item} />
+                <PathProgressCard key={item.id} item={item} lang={lang} />
               ))}
             </div>
           </section>
@@ -346,24 +381,24 @@ export default function ProgressPage() {
                 <Trophy className="size-5" />
               </div>
               <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-300">
-                Recent quiz results
+                {recentQuizResultsHeading}
               </h2>
             </div>
             <Link
               href="/dashboard/learner/quiz"
               className="text-sm font-semibold text-primary hover:underline"
             >
-              View all results
+              {viewAllResultsLabel}
             </Link>
           </div>
           <div className="space-y-3 p-6 pt-5">
             {scoreHistory.length === 0 ? (
               <div className="rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50/50 py-14 text-center dark:border-gray-700 dark:bg-gray-800/30">
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">No quiz results yet.</p>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{noQuizResultsLabel}</p>
               </div>
             ) : (
               scoreHistory.map((item) => (
-                <ScoreHistoryRow key={`${item.quizName}-${item.date}-${item.attemptId}`} item={item} />
+                <ScoreHistoryRow key={`${item.quizName}-${item.date}-${item.attemptId}`} item={item} lang={lang} />
               ))
             )}
           </div>
