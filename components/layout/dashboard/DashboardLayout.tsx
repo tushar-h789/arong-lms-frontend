@@ -5,6 +5,7 @@ import { SidebarProvider, useSidebar } from './SidebarContext'
 import { Sidebar } from './Sidebar'
 import { Header } from './Header'
 import { MainContent } from './MainContent'
+import { LanguageProvider } from './LanguageContext'
 
 function MobileToggleBar() {
   const { toggleMobile } = useSidebar()
@@ -25,12 +26,14 @@ function MobileToggleBar() {
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
-      <div className="min-h-screen bg-gray-50 dark:bg-background">
-        <Sidebar />
-        <MobileToggleBar />
-        <Header />
-        <MainContent>{children}</MainContent>
-      </div>
+      <LanguageProvider>
+        <div className="min-h-screen bg-gray-50 dark:bg-background">
+          <Sidebar />
+          <MobileToggleBar />
+          <Header />
+          <MainContent>{children}</MainContent>
+        </div>
+      </LanguageProvider>
     </SidebarProvider>
   )
 }

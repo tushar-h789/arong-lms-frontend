@@ -20,6 +20,8 @@ export const LEARNER_DASHBOARD = {
   /** Today focus: lesson left today OR badge teaser this week */
   todayFocusLine: 'You have 1 lesson left today',
   todayFocusAlt: 'Complete 2 courses this week to earn a badge',
+  todayFocusLineBn: 'আজকে আপনার ১টা লেসন বাকি আছে',
+  todayFocusAltBn: 'এই সপ্তাহে আরও ২টা কোর্স শেষ করলে নতুন ব্যাজ পাবেন',
 
   continueLearning: {
     id: 'c1',

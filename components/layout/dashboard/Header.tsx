@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSidebar } from './SidebarContext'
+import { useLanguage } from './LanguageContext'
 
 const ROLE_LABELS: Record<string, string> = {
   admin: 'Super Admin',
@@ -50,7 +51,6 @@ export function Header() {
 
   const [avatarOpen, setAvatarOpen] = useState(false)
   const [notificationOpen, setNotificationOpen] = useState(false)
-  const [switchOn, setSwitchOn] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS)
@@ -90,6 +90,9 @@ export function Header() {
   const markAllAsRead = () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
   }
+
+  const { language, toggleLanguage } = useLanguage()
+  const isBangla = language === 'bn'
 
   return (
     <>
@@ -168,21 +171,21 @@ export function Header() {
 
           {/* Language switch: OFF = EN, ON = BN */}
           <div className="flex items-center gap-2">
-            <span className={`text-xs font-medium ${!switchOn ? 'text-gray-900 dark:text-gray-100' : 'text-gray-400 dark:text-gray-500'}`}>EN</span>
+            <span className={`text-xs font-medium ${!isBangla ? 'text-gray-900 dark:text-gray-100' : 'text-gray-400 dark:text-gray-500'}`}>EN</span>
             <button
               type="button"
               role="switch"
-              aria-checked={switchOn}
+              aria-checked={isBangla}
               aria-label="Language: EN when off, BN when on"
-              onClick={() => setSwitchOn((prev) => !prev)}
-              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${switchOn ? 'bg-primary' : 'bg-gray-200'}`}
+              onClick={toggleLanguage}
+              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${isBangla ? 'bg-primary' : 'bg-gray-200'}`}
             >
               <span
-                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ${switchOn ? 'translate-x-5' : 'translate-x-0.5'}`}
+                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ${isBangla ? 'translate-x-5' : 'translate-x-0.5'}`}
                 aria-hidden
               />
             </button>
-            <span className={`text-xs font-medium ${switchOn ? 'text-gray-900 dark:text-gray-100' : 'text-gray-400 dark:text-gray-500'}`}>BN</span>
+            <span className={`text-xs font-medium ${isBangla ? 'text-gray-900 dark:text-gray-100' : 'text-gray-400 dark:text-gray-500'}`}>BN</span>
           </div>
 
           <ThemeToggle />
@@ -203,7 +206,7 @@ export function Header() {
               )}
             </button>
             {notificationOpen && (
-              <div className="fixed left-4 right-4 top-[4.5rem] z-50 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-lg overflow-hidden sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:w-80">
+              <div className="fixed left-4 right-4 top-18 z-50 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-lg overflow-hidden sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:w-80">
                 <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-700">
                   <span className="font-semibold text-gray-900 dark:text-gray-100">Notifications</span>
                   {unreadCount > 0 && (

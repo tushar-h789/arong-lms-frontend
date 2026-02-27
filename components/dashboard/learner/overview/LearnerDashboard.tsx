@@ -16,6 +16,7 @@ import {
   BADGE_SET,
   type BadgeId,
 } from '@/lib/learner-dashboard-data'
+import { useLanguage } from '@/components/layout/dashboard/LanguageContext'
 import { BadgeEarnOverlay } from './BadgeEarnOverlay'
 
 function getBadge(badgeId: BadgeId) {
@@ -24,6 +25,7 @@ function getBadge(badgeId: BadgeId) {
 
 export default function LearnerDashboard() {
   const d = LEARNER_DASHBOARD
+  const { language } = useLanguage()
   const [earnedBadgeIds, setEarnedBadgeIds] = useState<BadgeId[]>(d.badgesEarned)
   const [badgeToCelebrate, setBadgeToCelebrate] = useState<(typeof BADGE_SET)[number] | null>(null)
 
@@ -52,10 +54,14 @@ export default function LearnerDashboard() {
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            Welcome back, {d.learnerName}
+            {language === 'en' ? (
+              <>Welcome back, {d.learnerName}</>
+            ) : (
+              <>আবার স্বাগতম, {d.learnerName}</>
+            )}
           </h1>
           <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            {d.todayFocusLine}
+            {language === 'en' ? d.todayFocusLine : d.todayFocusLineBn ?? d.todayFocusLine}
           </p>
         </div>
         {continueData && (
@@ -64,7 +70,7 @@ export default function LearnerDashboard() {
             className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white shadow-md transition-all duration-200 hover:scale-[1.02] hover:bg-primary-hover hover:shadow-lg active:scale-[0.98]"
           >
             <Play className="size-4" />
-            Continue Learning
+            {language === 'en' ? 'Continue Learning' : 'শেখা চালিয়ে যান'}
           </Link>
         )}
       </header>
@@ -76,7 +82,7 @@ export default function LearnerDashboard() {
           aria-label="Continue learning"
         >
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Continue where you left off
+            {language === 'en' ? 'Continue where you left off' : 'যেখান থেকে থেমেছিলেন সেখান থেকেই শুরু করুন'}
           </h2>
           <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0 flex-1">
@@ -84,7 +90,7 @@ export default function LearnerDashboard() {
                 {continueData.title}
               </p>
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Next: {continueData.nextItem}
+                {language === 'en' ? 'Next' : 'পরবর্তী'}: {continueData.nextItem}
               </p>
               <div className="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-600">
                 <div
@@ -93,7 +99,7 @@ export default function LearnerDashboard() {
                 />
               </div>
               <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                {continueData.progress}% complete
+                {continueData.progress}% {language === 'en' ? 'complete' : 'সম্পন্ন'}
               </p>
             </div>
             <Link
@@ -101,7 +107,7 @@ export default function LearnerDashboard() {
               className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition-all duration-200 hover:scale-[1.03] hover:bg-primary-hover active:scale-[0.98]"
             >
               <Play className="size-4" />
-              Continue
+              {language === 'en' ? 'Continue' : 'চালিয়ে যান'}
             </Link>
           </div>
         </section>
@@ -112,7 +118,7 @@ export default function LearnerDashboard() {
         {/* B) Due Soon — compact list */}
         <section className="rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 p-5 shadow-sm">
           <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">
-            Due soon
+            {language === 'en' ? 'Due soon' : 'শীঘ্রই শেষ করতে হবে'}
           </h2>
           <ul className="mt-3 space-y-2">
             {d.dueSoon.slice(0, 4).map((item) => (
@@ -133,7 +139,7 @@ export default function LearnerDashboard() {
                   href={item.href}
                   className="shrink-0 rounded-lg bg-primary/10 dark:bg-primary/20 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors"
                 >
-                  Start now
+                  {language === 'en' ? 'Start now' : 'এখনই শুরু করুন'}
                 </Link>
               </li>
             ))}
@@ -143,7 +149,7 @@ export default function LearnerDashboard() {
         {/* C) My Progress — mini summary */}
         <section className="rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 p-5 shadow-sm">
           <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">
-            My progress
+            {language === 'en' ? 'My progress' : 'আমার অগ্রগতি'}
           </h2>
           <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
             <div>
@@ -151,7 +157,7 @@ export default function LearnerDashboard() {
                 {d.myProgress.lessonsThisWeek}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                Lessons this week
+                {language === 'en' ? 'Lessons this week' : 'এই সপ্তাহের লেসন'}
               </p>
             </div>
             <div>
@@ -159,7 +165,7 @@ export default function LearnerDashboard() {
                 {d.myProgress.completionPercent}%
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                Overall complete
+                {language === 'en' ? 'Overall complete' : 'মোট অগ্রগতি'}
               </p>
             </div>
             <div>
@@ -167,7 +173,7 @@ export default function LearnerDashboard() {
                 {d.myProgress.timeSpentMinutes}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                Min this week
+                {language === 'en' ? 'Min this week' : 'এই সপ্তাহে মিনিট'}
               </p>
             </div>
           </div>
@@ -201,7 +207,7 @@ export default function LearnerDashboard() {
             href="#"
             className="shrink-0 text-sm font-medium text-primary hover:text-primary-hover flex items-center gap-1"
           >
-            See all
+            {language === 'en' ? 'See all' : 'সব দেখুন'}
             <ChevronRight className="size-4" />
           </Link>
         </div>
@@ -213,13 +219,13 @@ export default function LearnerDashboard() {
         <section className="min-w-0 flex-1 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 p-5 shadow-sm">
           <div className="flex items-center justify-between">
             <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">
-              Badges
+              {language === 'en' ? 'Badges' : 'ব্যাজ'}
             </h2>
             <Link
               href="#"
               className="text-sm font-medium text-primary hover:text-primary-hover"
             >
-              View all
+              {language === 'en' ? 'View all' : 'সব ব্যাজ দেখুন'}
             </Link>
           </div>
           <div className="mt-4 flex flex-wrap items-center gap-3">
@@ -265,10 +271,20 @@ export default function LearnerDashboard() {
           <div className="rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-3 shadow-sm">
             <p className="flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-gray-100">
               <Flame className="size-4 text-amber-500" />
-              You&apos;ve learned for {d.streak.currentDays} days in a row
+              {language === 'en'
+                ? <>You&apos;ve learned for {d.streak.currentDays} days in a row</>
+                : <>আপনি টানা {d.streak.currentDays} দিন শিখছেন</>}
             </p>
             <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              {d.streak.nextMilestoneDays} days to unlock &apos;{d.streak.nextMilestoneBadgeLabel}&apos; badge
+              {language === 'en' ? (
+                <>
+                  {d.streak.nextMilestoneDays} days to unlock &apos;{d.streak.nextMilestoneBadgeLabel}&apos; badge
+                </>
+              ) : (
+                <>
+                  &apos;{d.streak.nextMilestoneBadgeLabel}&apos; ব্যাজ আনলক করতে আর {d.streak.nextMilestoneDays} দিন বাকি
+                </>
+              )}
             </p>
           </div>
         </section>
@@ -283,10 +299,16 @@ export default function LearnerDashboard() {
             </span>
             <div>
               <p className="font-medium text-gray-900 dark:text-gray-100">
-                You have {d.certificates.total} certificate{d.certificates.total !== 1 ? 's' : ''}
+                  {language === 'en'
+                    ? <>You have {d.certificates.total} certificate{d.certificates.total !== 1 ? 's' : ''}</>
+                    : <>আপনার কাছে {d.certificates.total} টি সার্টিফিকেট আছে</>}
               </p>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Latest: {d.certificates.latest.name}
+                  {language === 'en' ? (
+                    <>Latest: {d.certificates.latest.name}</>
+                  ) : (
+                    <>সর্বশেষঃ {d.certificates.latest.name}</>
+                  )}
               </p>
             </div>
           </div>
@@ -295,13 +317,13 @@ export default function LearnerDashboard() {
               href={d.certificates.latest.downloadHref}
               className="rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
-              Download
+              {language === 'en' ? 'Download' : 'ডাউনলোড'}
             </Link>
             <Link
               href="/dashboard/learner/certificates"
               className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-hover transition-colors"
             >
-              View all
+              {language === 'en' ? 'View all' : 'সব সার্টিফিকেট দেখুন'}
             </Link>
           </div>
         </div>
